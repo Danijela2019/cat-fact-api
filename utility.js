@@ -1,5 +1,6 @@
-const { text } = require('express');
 const fs = require('fs');
+const data = require('./data/data');
+
 
 const getAllFacts = () => {
     return new Promise(( resolve, reject ) => {
@@ -46,7 +47,6 @@ const nextId = (catFacts) => {
                     user: body.user,
                     text: body.text
                 }
-                const parsedNewCatFact = JSON.stringify(newCatFact);
                 const array= await getAllFacts();
                 array.push(newCatFact);
                 const json = JSON.stringify(array, null, 2);
@@ -76,9 +76,47 @@ const deleteCatFact = (id) => {
     }) 
 }
 
+const getRandomFact = () => {
+    let index=Math.floor(Math.random()*data.length);
+     return data[index];
+}
+
+const updateCatFact = (fact) => {
+    return new Promise((resolve, reject)=> {
+        fs.readFile('./data/data.json', 'utf8', async(err,data) => {
+            if (err){
+                reject(err)
+            } else {
+                const filteredArray = JSON.parse(data).filter((f) => f.id !== parseInt(fact.id, 10))
+               
+            filteredArray.push(fact)
+            const json =  JSON.stringify(filteredArray, null, 2);
+                fs.writeFile('./data/data.json', json,'utf8', (err) => {
+                  if (err) throw err;
+                    });
+                resolve(filteredArray)
+            }
+        })
+    }) 
+}
+
+const asyncHandler = (cb) => async (req, res, next) => {
+    try {
+      await cb(req, res, next);
+    } catch (err) {
+      next(err);
+    }
+  };
+
+const isEmptyObject = (obj) => !Object.keys(obj).length;
+
 module.exports = {
     getAllFacts, 
     getSingleFact,
     createNewFact,
-    deleteCatFact
+    deleteCatFact,
+    updateCatFact,
+    asyncHandler,
+    isEmptyObject,
+    getRandomFact
 };
