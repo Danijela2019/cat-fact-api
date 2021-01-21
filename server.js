@@ -5,7 +5,6 @@ const routes = require('./routes')
 const server = express();
 const port = process.env.PORT || 5000;
 
-
 server.use(bodyParser.json());
 server.use('/api/v1/catfacts',routes);
 

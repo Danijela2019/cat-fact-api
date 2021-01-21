@@ -4,7 +4,7 @@ const util = require('./utility');
 
 router.get('/', util.asyncHandler( async (_req, res)=> {
     const facts = await util.getAllFacts();
-    res.status.json(facts)
+    res.json(facts)
 }));
 
 router.get('/:id', util.asyncHandler( async (req, res)=> {
