@@ -7,10 +7,11 @@ const port = process.env.PORT || 5000;
 
 
 server.use(bodyParser.json());
-server.use('/v1/catfacts',routes);
+server.use('/api/v1/catfacts',routes);
 
 server.use((_req, _res, next) => {
   const error = new Error('Not found');
+  error.status = 404;
   next(error);
 });
 server.use((error, _req, res, _next) => {
