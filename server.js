@@ -1,14 +1,15 @@
 const express = require('express');
 const bodyParser = require('body-parser');
-const routes = require('./routes')
 const mongoose = require('mongoose');
+
+const routes = require('./routes');
+
 
 const server = express();
 const port = process.env.PORT || 5000;
 
 server.use(bodyParser.json());
-
-mongoose.connect('mongodb://localhost:27017/sandbox');
+mongoose.connect('mongodb://localhost:27017/catfacts');
 
 const db = mongoose.connection;
 db.on('error', (err) => {
