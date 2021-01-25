@@ -38,7 +38,7 @@ router.delete('/:id', util.asyncHandler(async (req, res)=> {
 }));
 
 router.put('/:id', util.asyncHandler(async (req, res)=> {
-    let fact = await util.getSingleFact(req.params.id)
+    const fact = await util.getSingleFact(req.params.id)
     if(!fact) {
         res.status(404).json({message:`The requested quote id:${req.params.id} does not exist`})
     }
