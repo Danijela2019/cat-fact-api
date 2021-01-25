@@ -9,13 +9,13 @@ const server = express();
 const port = process.env.PORT || 5000;
 
 server.use(bodyParser.json());
-mongoose.connect('mongodb://localhost:27017/catfacts');
+mongoose.connect('mongodb://localhost:27017/catfacts', {useNewUrlParser: true, useUnifiedTopology: true});
 
 const db = mongoose.connection;
 db.on('error', (err) => {
     console.error('Connection error happened', err)
 })
-db.once('open', ()=>{
+db.once('open', ()=> {
     console.log('Db connection OPEN');
 
 });

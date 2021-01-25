@@ -1,55 +1,66 @@
 const express = require('express');
 const router = express.Router();
 const util = require('./utility');
+const Fact = require('./models').Fact;
 
-router.get('/', util.asyncHandler( async (_req, res)=> {
-    const facts = await util.getAllFacts();
-    res.json(facts)
-}));
 
-router.get('/:id', util.asyncHandler( async (req, res)=> {
-    const fact = await util.getSingleFact(req.params.id);
-    if(!fact) res.status(404).json({message:`The requested quote id:${req.params.id} does not exist`})
-    res.json(fact)
-}));
+router.param('id', (req, _res, next, id) => {
+    Fact.findById(id,(err, doc)=> {
+        if(!doc) {
+            err = new Error(`The requested quote id:${req.params.id} does not exist`);
+            err.status = 404;
+            return next(err)
+        }
+        if(err) {
+            return next(err);
+        }
+        req.fact = doc;
+        next();
+    })
+})
 
-router.get('/catfact/random', util.asyncHandler(async (_req,res)=>{
-    const fact = await util.getRandomFact();
-    res.json(fact);
-}))
+router.get('/',(_req, res, next)=> {
+    Fact.find({}, (err, facts) => {
+        if(err) return next(err)
+        res.json(facts)
+    })
+});
+router.get('/:id',(req, res)=> {
+    res.json(req.fact)
+}); 
 
-router.post('/', util.asyncHandler(async (req, res) => {
+router.get('/catfact/random', (_req,res)=>{
+    Fact.find({}, (err, facts) => {
+        if(err) return next(err)
+        const randomFact= util.getRandomFact(facts);
+        res.json(randomFact);
+    })
+});
+
+router.post('/', (req, res, next) => {
     if (util.isEmptyObject(req.body) || !req.body.user || !req.body.text ){
-         res.status(422).json({message: 'You need to add both, user and text to proceed'}); 
+        res.status(422).json({message: 'You need to add both, user and text to proceed'});
     } else {
-        const newFact = await util.createNewFact(req.body)
-        res.status(201).json(newFact)
+        const fact = new Fact(req.body);
+        fact.save((err, fact) => {
+            if(err) return next(err)
+            res.status(201).json(fact)
+        })
     }
-}));
+}); 
 
-router.delete('/:id', util.asyncHandler(async (req, res)=> {
-    const fact = await util.getSingleFact(req.params.id)
-    if(!fact){
-        res.status(404).json({message:`The requested quote id:${req.params.id} does not exist`})
-   } else {
-        await util.deleteCatFact(req.params.id);
-        res.status(204).end();
-    }
-}));
+router.delete('/:id',(req, res,next) => {
+   req.fact.remove((err) => {
+        if(err) return next(err)
+        res.status(204).end()
+        })
+}); 
 
-router.put('/:id', util.asyncHandler(async (req, res)=> {
-    const fact = await util.getSingleFact(req.params.id)
-    if(!fact) {
-        res.status(404).json({message:`The requested quote id:${req.params.id} does not exist`})
-    }
-    if(util.isEmptyObject(req.body) || !req.body.user || !req.body.text ){
-        res.status(422).json({message: 'You need to add both, user and text to proceed'}); 
-    } else {
-        fact.user = req.body.user;
-        fact.text = req.body.text;
-        await util.updateCatFact(fact);
+router.put('/:id',(req, res, next)=> {
+    req.fact.updateOne(req.body, (err, _resault) => {
+        if(err) return next(err);
         res.status(204).end();
-    }
-}));
+    })
+});
 
 module.exports = router;

@@ -1,8 +1,9 @@
-# cat-fact-api
+# cat-fact-api( MONGO DB)
 
 ## Introduction
 
-This is a simple API using Node.js Express framework for managing cat facts data. The data is saved in a json file for the first version and the retrieval of the data is done asynchronously to mimic the behavior of a real database. The idea is in the future to replace the json file with a real database.
+This is a simple API using Node.js Express framework for managing cat facts data. The data is saved in MongoDB data base using Mongoose as ORM for this purpose. All CRUD opperations are available through different API endpoints.
+There is a different version of this API where the data is stored in a JSON file. The endpoint are the same.
 
 ## Functionalities
 
@@ -12,14 +13,7 @@ This is a simple API using Node.js Express framework for managing cat facts data
 - **remove a specific cat fact**
 - **get a random cat fact**
 
-## How to test it
-
-- **Clone the repo: https://github.com/Danijela2019/cat-facts-api.git**
-- **Install packages: npm install**
-- **Run the 'npm start' command**
-- **connect it to your frontend or use [POSTMAN](https://www.postman.com/) to test it**
-
-## Available endpoint
+## Available endpoints
 
 - **BASE URL: /api/v1/catfacts | (returns all cat facts)**
 - **GET /:id | (returns a cat fact with a specific id)**
